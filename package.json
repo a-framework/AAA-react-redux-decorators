@@ -1,8 +1,8 @@
 {
   "name": "react-redux-decorators",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A set of React/Redux decorators",
-  "main": "lib/index.js",
+  "main": "lib/index",
   "jsnext:main": "lib/index",
   "scripts": {
     "build": "babel src/ --out-dir lib/"

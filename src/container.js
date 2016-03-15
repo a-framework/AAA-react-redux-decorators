@@ -1,23 +1,36 @@
 import React, {Component} from 'react';
 
-export default function(DecoratedComponent) {
-    return class Decorator extends Component {
-        dispatch(actionCreator) {
-            actionCreator((action) => {
-                this.setState(action.payload || {});
-            });
-        }
+export default function Container(options) {
+    // `options` is the class being decorated
+    let result = options;
 
-        render() {
-            const {dispatch = this.dispatch} = this.props;
+    if (typeof options !== 'function') {
+        result = (DecoratedComponent) => {
+            return class Decorator extends Component {
+                static get propTypes() {
+                    return options.propTypes;
+                }
 
-            return (  
-                <DecoratedComponent 
-                    {...this.props} 
-                    {...this.state} 
-                    dispatch={dispatch.bind(this)}
-                />
-            );
-        }
-    };
+                dispatch(actionCreator) {
+                    actionCreator((action) => {
+                        this.setState(action.payload || {});
+                    });
+                }
+
+                render() {
+                    const {dispatch = this.dispatch} = this.props;
+
+                    return (  
+                        <DecoratedComponent 
+                            {...this.props} 
+                            {...this.state} 
+                            dispatch={dispatch.bind(this)}
+                        />
+                    );
+                }
+            };        
+        };        
+    }
+
+    return result;
 };
