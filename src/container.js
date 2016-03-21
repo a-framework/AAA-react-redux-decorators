@@ -9,6 +9,10 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
             return options.propTypes;
         }
 
+        constructor(props = {}) {
+            super(props);
+        }
+
         dispatch(actionCreator) {
             actionCreator((action) => {
                 this.setState(action.payload || {});
@@ -17,10 +21,12 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
 
         render() {
             const {dispatch = this.dispatch} = this.props;
-            const {locale = 'en'} = options;
+            const {messages = {}} = this.props;
+
+            const {locale = this.props.locale || 'en'} = this.props || options;
             
             return (  
-                <IntlProvider locale={locale}>
+                <IntlProvider locale={locale} messages={messages}>
                     <ConnectedDecoratedComponent 
                         {...this.props} 
                         {...this.state} 

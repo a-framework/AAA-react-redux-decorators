@@ -1,6 +1,6 @@
 {
   "name": "react-redux-decorators",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A set of React/Redux decorators",
   "main": "lib/index",
   "jsnext:main": "lib/index",
