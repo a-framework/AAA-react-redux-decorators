@@ -17,9 +17,14 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
         }
 
         dispatch(actionCreator) {
-            actionCreator((action) => {
-                this.setState(action.payload || {});
-            });
+            if (typeof actionCreator === 'function') {
+                actionCreator((action) => {
+                    this.setState(action.payload || {});
+                });
+            } else {
+                // actionCreator is, in fact, an FSA
+                this.setState(actionCreator.payload || {});
+            }
         }
 
         calculateProps() {
