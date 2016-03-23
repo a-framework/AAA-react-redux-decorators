@@ -16,14 +16,14 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
             this.inejctedDispath = dispatch.bind(this);
         }
 
-        dispatch(actionCreator) {
-            if (typeof actionCreator === 'function') {
-                actionCreator((action) => {
+        dispatch(action) {
+            // thunk-lik action, in fact, an actionCreator
+            if (typeof action === 'function') {
+                action((action) => {
                     this.setState(action.payload || {});
                 });
             } else {
-                // actionCreator is, in fact, an FSA
-                this.setState(actionCreator.payload || {});
+                this.setState(action.payload || {});
             }
         }
 
