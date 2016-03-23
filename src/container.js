@@ -11,6 +11,9 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
 
         constructor(props = {}) {
             super(props);
+
+            const {dispatch = this.dispatch} = props;
+            this.inejctedDispath = dispatch.bind(this);
         }
 
         dispatch(actionCreator) {
@@ -19,36 +22,31 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
             });
         }
 
-        render() {
-            const {dispatch = this.dispatch} = this.props;
+        calculateProps() {
             const {messages} = this.props;
             const {locale = this.props.locale || 'en'} = this.props || options;
 
-            const decoratedComponent = (
-                <ConnectedDecoratedComponent 
-                    {...this.props} 
-                    {...this.state} 
-                    dispatch={dispatch.bind(this)}
-                />
-            );
+            const props = {locale};
 
-            let intlComponent;
-
-            if (typeof messages === 'undefined') {
-                intlComponent = (  
-                    <IntlProvider locale={locale}>
-                        {decoratedComponent}
-                    </IntlProvider>
-                );
-            } else {
-                intlComponent = (  
-                    <IntlProvider locale={locale} messages={messages}>
-                        {decoratedComponent}
-                    </IntlProvider>
-                );
+            if (typeof messages !== 'undefined') {
+                props.messages = messages;
             }
+            
+            return props;
+        }
 
-            return intlComponent;
+        render() {
+            const props = this.calculateProps();
+
+            return (  
+                <IntlProvider {...props}>
+                    <ConnectedDecoratedComponent 
+                        {...this.props} 
+                        {...this.state} 
+                        dispatch={this.inejctedDispath}
+                    />
+                </IntlProvider>
+            );
         }
     };
 
