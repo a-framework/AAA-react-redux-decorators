@@ -4,7 +4,7 @@ import {IntlProvider, injectIntl} from 'react-intl';
 export const decorateContainer = function(DecoratedComponent, options = {}) {
     const ConnectedDecoratedComponent = injectIntl(DecoratedComponent);    
 
-    const EnvelopedContaine = class extends Component {
+    const EnvelopedContainer = class extends Component {
         static get propTypes() {
             return options.propTypes;
         }
@@ -55,11 +55,11 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
         }
     };
 
-    Object.defineProperty(EnvelopedContaine, 'name', {writable: true});
-    EnvelopedContaine.name = DecoratedComponent.name;
-    Object.defineProperty(EnvelopedContaine, 'name', {writable: false});
+    Object.defineProperty(EnvelopedContainer, 'name', {writable: true});
+    EnvelopedContainer.name = DecoratedComponent.name;
+    Object.defineProperty(EnvelopedContainer, 'name', {writable: false});
 
-    return EnvelopedContaine;
+    return EnvelopedContainer;
 };
 
 export default function Container(options = {}) {
