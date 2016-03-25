@@ -29,7 +29,7 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
 
         calculateProps() {
             const {messages} = this.props;
-            const {locale = this.props.locale || 'en'} = this.props || options;
+            const {locale = options.locale || 'en'} = this.props;
 
             const props = {locale};
 
@@ -41,15 +41,25 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
         }
 
         render() {
-            const props = this.calculateProps();
+            const intlProps = this.calculateProps();
+
+            // TODO: Deep merge? Performance on render?
+            const propsConfig = this.props ? (this.props.config || {}) : {};
+            const stateConfig = this.state ? (this.state.config || {}) : {};
+            const config = {...options.config, ...propsConfig, ...stateConfig};
+
+            console.log(config);
+
+            const props = {
+                ...this.props,
+                ...this.state,
+                ...{config: config}, 
+                ...{dispatch: this.inejctedDispath}
+            };
 
             return (  
-                <IntlProvider {...props}>
-                    <ConnectedDecoratedComponent 
-                        {...this.props} 
-                        {...this.state} 
-                        dispatch={this.inejctedDispath}
-                    />
+                <IntlProvider {...intlProps}>
+                    <ConnectedDecoratedComponent {...props} />
                 </IntlProvider>
             );
         }
