@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {IntlProvider, injectIntl} from 'react-intl';
 
 export const decorateContainer = function(DecoratedComponent, options = {}) {
@@ -7,6 +7,12 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
     const EnvelopedContainer = class extends Component {
         static get propTypes() {
             return options.propTypes;
+        }
+
+        static get contextTypes() {
+            return {
+                config: PropTypes.object
+            };
         }
 
         constructor(props = {}) {
@@ -27,7 +33,7 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
             }
         }
 
-        calculateProps() {
+        calculateIntlProps() {
             const {messages} = this.props;
             const {locale = options.locale || 'en'} = this.props;
 
@@ -40,15 +46,12 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
             return props;
         }
 
-        render() {
-            const intlProps = this.calculateProps();
-
+        mergeProps() {
             // TODO: Deep merge? Performance on render?
+            const contextConfig = this.context ? (this.context.config || {}) : {};
             const propsConfig = this.props ? (this.props.config || {}) : {};
             const stateConfig = this.state ? (this.state.config || {}) : {};
-            const config = {...options.config, ...propsConfig, ...stateConfig};
-
-            console.log(config);
+            const config = {...options.config, ...contextConfig, ...propsConfig, ...stateConfig};
 
             const props = {
                 ...this.props,
@@ -56,6 +59,13 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
                 ...{config: config}, 
                 ...{dispatch: this.inejctedDispath}
             };
+
+            return props;
+        }
+
+        render() {
+            const intlProps = this.calculateIntlProps();
+            const props = this.mergeProps();            
 
             return (  
                 <IntlProvider {...intlProps}>
@@ -68,6 +78,7 @@ export const decorateContainer = function(DecoratedComponent, options = {}) {
     Object.defineProperty(EnvelopedContainer, 'name', {writable: true});
     EnvelopedContainer.name = DecoratedComponent.name;
     Object.defineProperty(EnvelopedContainer, 'name', {writable: false});
+    EnvelopedContainer.Component = DecoratedComponent
 
     return EnvelopedContainer;
 };
